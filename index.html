@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<title>CodeMaker</title>
+
+	<link rel="stylesheet" type="text/css" href="pure-base-buttons-grids.css">
+	<link rel="stylesheet" type="text/css" href="paper.css">
+
+	<script src="raphael-min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="qrcode.js" type="text/javascript" charset="utf-8"></script>
+	<script src="jspdf.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="picomodal.js" type="text/javascript" charset="utf-8"></script>
+	<script src="codepaper.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		function setupPage() {
+			var pageKey = location.hash.substring(1);
+			if (pageKey.length <= 0) {
+				// bit hacky - hide UI initially so we don't see a flash of the 'choose size' content; show when needed
+				document.getElementById('get-started').style.visibility = 'visible';
+			}
+			InitialUI.setup(pageKey);
+		}
+		window.addEventListener('load', setupPage);
+		window.addEventListener('hashchange', setupPage);
+		window.addEventListener('resize', CodePaper.resizePage);
+	</script>
+
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+			m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+		ga('create', 'UA-56260023-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="get-started" class="splash" style="visibility:hidden">
+			<h1>Create TicQR &amp; PaperChains documents</h1>
+			<p id="no-image-ui">Pick a paper size to begin</p>
+			<div id="image-loader">
+				<p id="draganddrop">Drop a background image here, or pick a paper size to start from a blank sheet</p>
+				<p id="upload">
+					<label>Choose a background image, or pick a paper size to start from a blank sheet
+						<input type="file">
+					</label>
+				</p>
+			</div>
+			<div class="pure-g paper-chooser">
+				<div class="pure-u-1-3"><span class="paper-size portrait" onclick="InitialUI.createBlankDocument(210, 297);">Portrait<br>(A4)</span>
+				</div>
+				<div class="pure-u-1-3"><span class="paper-size landscape" onclick="InitialUI.createBlankDocument(297, 210);">Landscape<br>(A4)</span>
+				</div>
+				<div class="pure-u-1-3">
+					<span class="paper-size square" onclick="InitialUI.showCustomPaperChooser(this)">Custom&hellip;</span>
+					<span class="paper-size square custom" id="custom-paper-chooser">
+						<label><input id="custom-x-size" type="number" min="63" max="2100" step="1" class="xy-box" placeholder="width" onkeydown="InitialUI.handleKeyDown()" autofocus> mm</label>
+						<label>&times;</label>
+						<label><input id="custom-y-size" type="number" min="63" max="2100" step="1" class="xy-box" placeholder="height" onkeydown="InitialUI.handleKeyDown()"> mm</label>
+						<button class="pure-button button-xsmall" onclick="InitialUI.chooseCustomPaperSize();">Go</button>
+					</span>
+				</div>
+			</div>
+			<p id="credits">This code maker is part of the <a href="http://enterise.info/">Enterise Toolkit</a>
+			</p>
+		</div>
+		<div id="code-ui">
+			<div id="one-mm" style="width:1mm !important; height:1mm !important; visibility:hidden !important;"></div>
+			<div id="options-menu">
+				<button id="download" class="pure-button pure-button-primary">Download PDF</button>
+				<div id="configuration">
+					<span>Configuration:</span>
+					<input id="emailaddress" type="text" placeholder="Email address" onchange="InitialUI.setDestinationAddress(this.value);">
+					<label id="includeimage">
+						<input type="checkbox" checked="checked">Include image in PDF
+					</label>
+				</div>
+			</div>
+		</div>
+		<div id="paper-holder"></div>
+	</div>
+</body>
+
+</html>

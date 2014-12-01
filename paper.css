@@ -1,0 +1,198 @@
+/* box model */
+
+*,
+*:before,
+*:after {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+/* --------- */
+
+/* the editor */
+
+body,
+html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background: #eee;
+	font-weight: 100;
+}
+body {
+	overflow: hidden;
+}
+#container {
+	padding: 5px;
+}
+#paper {
+	fill: #fff;
+	stroke-width: 0;
+}
+svg {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 1px 2px 10px #888;
+}
+/* ---------- */
+
+/* image drag/drop and paper chooser */
+
+.splash {
+	width: 100%;
+	height: 80%;
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	text-align: center;
+	font-size: 20px;
+}
+.splash h1 {
+	margin-bottom: 100px;
+}
+#no-image-ui {
+	display: none;
+}
+#image-loader {
+	border: 5px dashed #bbb;
+	margin: 0 20%;
+	padding: 1em;
+}
+#image-loader.hover {
+	border: 5px dashed #78de7c;
+	background: #fff;
+}
+.paper-chooser {
+	margin-top: 80px;
+	margin-left: 20%;
+	margin-right: 20%;
+}
+.paper-size {
+	background: #fff;
+	display: block;
+	margin: 0 auto;
+	box-shadow: 1px 2px 4px #888;
+	cursor: pointer;
+	padding-top: 45px;
+}
+.portrait {
+	width: 130px;
+	height: 184px;
+}
+.landscape {
+	width: 184px;
+	height: 130px;
+}
+.square {
+	width: 150px;
+	height: 150px;
+}
+.custom {
+	padding-top: 15px;
+	cursor: default;
+	display: none;
+}
+.custom input {
+	width: 80px;
+}
+.custom label {
+	display: block;
+}
+.button-large {
+	font-size: 115%;
+}
+.button-small {
+	font-size: 85%;
+}
+.button-xsmall {
+	margin-top: 10px;
+	font-size: 70%;
+}
+#code-ui {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	background: #ccc;
+	visibility: hidden;
+}
+input {
+	font-weight: 100;
+}
+input[type="file"] {
+	margin-top: 20px;
+	margin-right: 70px;
+}
+input[type="file"]::-webkit-file-upload-button {
+	-webkit-appearance: none;
+	font-family: inherit;
+	font-weight: 100;
+	padding: 0.5em 1em;
+	color: #444;
+	border: 1px solid #999;
+	background-color: #E6E6E6;
+	text-decoration: none;
+	border-radius: 2px;
+	cursor: pointer;
+	margin-left: 140px;
+}
+.xy-box {
+	font-weight: 100;
+	margin: 0 auto;
+	width: 65px;
+	text-align: right;
+}
+.pico-content input {
+	margin-top: 5px;
+	font-weight: 100;
+}
+.pico-content input[type="text"] {
+	width: 100%;
+}
+.pico-content .button-small {
+	float: right;
+	margin-top: 5px;
+	padding: 0.4em 1em;
+}
+.pico-content .button-large {
+	margin: 1em 0.5em 0 0.5em;
+}
+#options-menu {
+	padding: 10px;
+}
+#options-menu .pure-button {
+	width: 100%;
+}
+#options-menu div {
+	margin-top: 10px;
+}
+#options-menu span {
+	margin-top: 10px;
+	display: block;
+}
+#options-menu input {
+	margin-top: 5px;
+}
+#options-menu input[type="checkbox"] {
+	margin-right: 10px;
+}
+#options-menu input[type="text"] {
+	width: 100%;
+}
+#options-menu label {
+	margin-top: 5px;
+}
+#configuration {
+	display: none;
+}
+#includeimage {
+	display: none;
+}
+#credits {
+	margin-top: 80px;
+	font-size: 80%;
+}

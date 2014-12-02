@@ -1074,7 +1074,7 @@ CodePaper.ui = {
 				modal.modalElem().querySelector('#download-paperchains-pdf').onclick = function () {
 					// include image by default - if they uploaded one for PaperChains then they probably want it
 					modal.close();
-					CodePaper.downloadPage(null, true);
+					CodePaper.event.downloadPage(null, true);
 				};
 				modal.modalElem().querySelector('#edit-paperchains-page').onclick = function () {
 					modal.close();

@@ -28,6 +28,8 @@ CodePaper.config = {
 
 	MINIMUM_PAPER_SIZE: 63, // mm; square - 3 x minimum QR code size is ok (TODO: allow long thin documents etc)
 
+	DEFAULT_DPI: 72, // for resizing images to their mm size (TODO: is there a better way?)
+
 	QR_IDENTIFIER_NUM_BOXES: 7, // number of boxes in one of the three key identifiers (should never change)
 	QR_MARGIN: 2, // mm - can be customised for easier scanning
 
@@ -240,10 +242,12 @@ CodePaper.setup = {
 	},
 
 	addImage: function (image) {
-		// only allow images that are the same size as the page
+		// only allow images that are the same size ratio as the page
 		// TODO: store pageKeys that have images in local storage so we can prompt to re-drag/drop?
-		if (image.width == CodePaper.common.paperSize.width && image.height == CodePaper.common.paperSize.height) {
-			CodePaper.common.backgroundImage = image;
+		var imageRatio = image.width / image.height;
+		var paperRatio = CodePaper.common.paperSize.width / CodePaper.common.paperSize.height;
+		if (Math.abs(imageRatio - paperRatio) < 0.01) {
+			CodePaper.common.backgroundImage = image.src;
 
 			var newImage = CodePaper.common.r.image(image.src, 0, 0, image.width, image.height);
 			newImage.node.id = 'paper';
@@ -259,8 +263,9 @@ CodePaper.setup = {
 
 		} else {
 			CodePaper.dialog.show('Sorry, unable to include that image – its size does not match<br><br>Please ensure ' +
-				'that the image you use is the same as the page size of ' + CodePaper.common.paperSize.width + 'mm (width) × ' +
-				CodePaper.common.paperSize.height + 'mm (height)<br><span class="pure-button button-large" ' +
+				'that the image you use has the same width/height ratio as the page (' + CodePaper.common.paperSize.width + 'mm × ' +
+				CodePaper.common.paperSize.height + 'mm).<br><br>The dimensions of the image you chose are: ' +
+				image.width + 'pixels × ' + image.height + 'pixels<br><span class="pure-button button-large" ' +
 				'id="image-size-incorrect">Ignore</span>', 400, function (modal) {
 					modal.modalElem().querySelector('#image-size-incorrect').onclick = function () {
 						modal.close();
@@ -473,6 +478,12 @@ CodePaper.setup = {
 	updatePageType: function (type, secondTry) {
 		// TODO: if we allow switching types at any point, then this will need to reload page elements
 		CodePaper.common.pageType = type;
+		if (type == 1) {
+			document.getElementById('configuration').style.display = 'block'; // TicQR
+		} else {
+			document.getElementById('configuration').style.display = 'none'; // PaperChains
+		}
+		
 		if (CodePaper.common.pageKey !== null) {
 			CodePaper.remote.requestJsonP('updatetype=' + CodePaper.common.pageKey + '&type=' + type +
 				'&callback=CodePaper.remote.defaultCallback');
@@ -1340,10 +1351,9 @@ InitialUI = {
 				image.src = event.target.result;
 
 				// resize pixels to millimetres
-				// TODO: this is not very accurate
-				var pxPerMM = document.getElementById('one-mm').offsetWidth;
-				image.width /= pxPerMM;
-				image.height /= pxPerMM;
+				var pxPerMM = CodePaper.config.DEFAULT_DPI / 25.4;
+				image.width = Math.round(image.width / pxPerMM);
+				image.height = Math.round(image.height / pxPerMM);
 
 				if (image.width >= CodePaper.config.MINIMUM_PAPER_SIZE &&
 					image.height >= CodePaper.config.MINIMUM_PAPER_SIZE) {

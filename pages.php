@@ -27,7 +27,10 @@ $DEFAULT_ERROR_MESSAGE = 'query error'; // a generic error message
 
 $ALLOWED_PAGEKEY_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+$DEFAULT_CODE_SIZE = 21;
 $GRID_SCALE = 21; // always 21mm, until we enable QR code resizing (if at all...)
+
+$NUM_RESERVED_IDS = 1000000; // reserve a set of IDs at the start for future internal use
 
 // --------------------------------------------------------------------------------------------------------------------
 if ($DEBUG) {
@@ -81,6 +84,7 @@ function initialiseCodeMakerDB() {
 					leftCodeY INTEGER NOT NULL,
 					rightCodeX INTEGER NOT NULL,
 					rightCodeY INTEGER NOT NULL,
+					codeSize INTEGER NOT NULL,
 					type INTEGER NOT NULL,
 					locked INTEGER NOT NULL,
 					dateCreated INTEGER NOT NULL,
@@ -120,11 +124,18 @@ function initialiseCodeMakerDB() {
 				destination TEXT NOT NULL
 			)');
 	$db->query('CREATE INDEX destinations_index ON destinations(pageId)');
+
+	// reserve initial values for internal use
+	global $NUM_RESERVED_IDS;
+	if ($NUM_RESERVED_IDS > 0) {
+		$db->exec('INSERT INTO pages (id, width, height, leftCodeX, leftCodeY, rightCodeX, rightCodeY, codeSize, type, locked, dateCreated, dateModified) VALUES (' . intval($NUM_RESERVED_IDS) . ', 126, 126, 0, 105, 105, 0, 21, 1, 1, 0, 0);');
+	}
 	$db->commit();
 
 	$db->exec('VACUUM DB'); // clear up space from old records
 
-	echo getErrorJSON('database initialised successfully');
+	echo getErrorJSON('database initialised successfully; initial id: ' . getPageKeyFromID(intval($NUM_RESERVED_IDS)));
+	exit;
 }
 
 // returns a JSON-formatted error message, or $DEFAULT_ERROR_MESSAGE if debugging is turned off
@@ -269,9 +280,11 @@ function savePageToDB($pageId, $width, $height, $leftCodeX, $leftCodeY, $rightCo
 	$statement = false;
 	$currentTime = millitime();
 	if ($newRow) {
-		$statement = $db->prepare('INSERT INTO pages (width, height, leftCodeX, leftCodeY, rightCodeX, rightCodeY, type, locked, dateCreated, dateModified) VALUES (:width, :height, :leftCodeX, :leftCodeY, :rightCodeX, :rightCodeY, 0, 0, :dateCreated, :dateModified)');
+		global $DEFAULT_CODE_SIZE;
+		$statement = $db->prepare('INSERT INTO pages (width, height, leftCodeX, leftCodeY, rightCodeX, rightCodeY, codeSize, type, locked, dateCreated, dateModified) VALUES (:width, :height, :leftCodeX, :leftCodeY, :rightCodeX, :rightCodeY, :codeSize, 0, 0, :dateCreated, :dateModified)');
 		if ($statement !== false) {
 			$statement->bindParam(':dateCreated', $currentTime);
+			$statement->bindParam(':codeSize', $DEFAULT_CODE_SIZE);
 		}
 	} else {
 		$statement= $db->prepare('UPDATE pages SET width = :width, height = :height, leftCodeX = :leftCodeX, leftCodeY = :leftCodeY, rightCodeX = :rightCodeX, rightCodeY = :rightCodeY, dateModified = :dateModified WHERE id == :pageId AND locked == 0');

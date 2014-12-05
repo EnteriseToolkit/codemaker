@@ -483,7 +483,10 @@ CodePaper.setup = {
 		} else {
 			document.getElementById('configuration').style.display = 'none'; // PaperChains
 		}
-		
+		if (CodePaper.common.backgroundImage !== null) {
+			document.getElementById('includeimage').style.display = 'block';
+		}
+
 		if (CodePaper.common.pageKey !== null) {
 			CodePaper.remote.requestJsonP('updatetype=' + CodePaper.common.pageKey + '&type=' + type +
 				'&callback=CodePaper.remote.defaultCallback');
@@ -1000,15 +1003,15 @@ CodePaper.event = {
 		// CodePaper.r.setSize(newWidth, newHeight);
 	},
 
-	downloadPage: function (event, includeImage) {
-		// if a tickbox is selected it will show in blue in the exported PDF - fix
+	downloadPage: function () {
+		// make sure selected tickboxes don't show as blue in the exported PDF
 		CodePaper.common.selectedTickBox = null;
 		CodePaper.common.tickBoxes.attr({
 			stroke: '#000' // TODO: do this in a way that is reversible
 		});
 
 		var backgroundImage = null;
-		if (includeImage || document.getElementById('includeimage').querySelector('input').checked) {
+		if (document.getElementById('includeimage').querySelector('input').checked) {
 			backgroundImage = CodePaper.common.backgroundImage;
 		}
 		PDFConverter.download(CodePaper.common.paperSize, CodePaper.common.page, backgroundImage, CodePaper.config.EXPORT_FILENAME + '.pdf');
@@ -1074,7 +1077,7 @@ CodePaper.ui = {
 				modal.modalElem().querySelector('#download-paperchains-pdf').onclick = function () {
 					// include image by default - if they uploaded one for PaperChains then they probably want it
 					modal.close();
-					CodePaper.event.downloadPage(null, true);
+					CodePaper.event.downloadPage();
 				};
 				modal.modalElem().querySelector('#edit-paperchains-page').onclick = function () {
 					modal.close();
@@ -1285,8 +1288,7 @@ InitialUI = {
 	},
 	acceptedTypes: {
 		'image/png': true,
-		'image/jpeg': true,
-		'image/gif': true
+		'image/jpeg': true
 	},
 	imageLoader: null,
 	fileUpload: null,

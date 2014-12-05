@@ -5,7 +5,7 @@ A web-based editor for [PaperChains](https://github.com/EnteriseToolkit/papercha
 
 For TicQR, the codemaker allows you to add checkboxes and item descriptions & quantities. For PaperChains the codemaker allows you to browse audio as it is added to a document.
 
-![CodeMaker](http://www.enterise.info/codemaker/github-screenshot-1.png)![CodeMaker](http://www.enterise.info/codemaker/github-screenshot-2.png)
+![CodeMaker](http://www.enterise.info/codemaker/github.png)
 
 
 How do I use it?

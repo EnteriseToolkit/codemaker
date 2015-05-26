@@ -209,10 +209,10 @@ function getPageKeyFromID($integer) {
 	$length = strlen($ALLOWED_PAGEKEY_CHARS);
 	$out = null;
 	while($integer > $length - 1) {
-		$out = $ALLOWED_PAGEKEY_CHARS[fmod($integer, $length)] . $out;
-		$integer = floor( $integer / $length );
+		$out = $ALLOWED_PAGEKEY_CHARS[intval(fmod($integer, $length))] . $out;
+		$integer = floor($integer / $length);
 	}
-	return $ALLOWED_PAGEKEY_CHARS[$integer] . $out;
+	return $ALLOWED_PAGEKEY_CHARS[intval($integer)] . $out;
 }
 
 // convert a pageKey to the database row ID that it represents
@@ -294,12 +294,18 @@ function savePageToDB($pageId, $width, $height, $leftCodeX, $leftCodeY, $rightCo
 	}
 	if ($statement !== false) {
 		$db->beginTransaction();
-		$statement->bindParam(':width', intval($width));
-		$statement->bindParam(':height', intval($height));
-		$statement->bindParam(':leftCodeX', intval($leftCodeX));
-		$statement->bindParam(':leftCodeY', intval($leftCodeY));
-		$statement->bindParam(':rightCodeX', intval($rightCodeX));
-		$statement->bindParam(':rightCodeY', intval($rightCodeY));
+		$widthParam = intval($width);
+		$heightParam = intval($height);
+		$leftCodeXParam = intval($leftCodeX);
+		$leftCodeYParam = intval($leftCodeY);
+		$rightCodeXParam = intval($rightCodeX);
+		$rightCodeYParam = intval($rightCodeY);
+		$statement->bindParam(':width', $widthParam);
+		$statement->bindParam(':height', $heightParam);
+		$statement->bindParam(':leftCodeX', $leftCodeXParam);
+		$statement->bindParam(':leftCodeY', $leftCodeYParam);
+		$statement->bindParam(':rightCodeX', $rightCodeXParam);
+		$statement->bindParam(':rightCodeY', $rightCodeYParam);
 		$statement->bindParam(':dateModified', $currentTime);
 		if ($statement->execute()) {
 			$result['status'] = 'ok';
@@ -407,7 +413,8 @@ function getSingleTickBoxFromDB($boxId) {
 
 	$statement = $db->prepare('SELECT * FROM tickboxes WHERE id == :boxId and deleted == 0');
 	if ($statement !== false) {
-		$statement->bindParam(':boxId', intval($boxId));
+		$boxIdParam = intval($boxId);
+		$statement->bindParam(':boxId', $boxIdParam);
 		if ($statement->execute()) {
 			if ($box = $statement->fetch(PDO::FETCH_ASSOC)) {
 				return $box;
@@ -472,8 +479,9 @@ function saveTickBoxToDB($boxId, $pageId, $x, $y, $description, $quantity, $temp
 		if ($updateDescriptionAndQuantity) {
 			$statement = $db->prepare('UPDATE tickboxes SET x = :x, y = :y, description = :description, quantity = :quantity, dateModified = :dateModified WHERE id == :boxId AND pageId == :pageId');
 			if ($statement !== false) {
+				$quantityParam = intval($quantity);
 				$statement->bindParam(':description', $description);
-				$statement->bindParam(':quantity', intval($quantity));
+				$statement->bindParam(':quantity', $quantityParam);
 			}
 		} else {
 			$statement= $db->prepare('UPDATE tickboxes SET x = :x, y = :y, dateModified = :dateModified WHERE id == :boxId AND pageId == :pageId');
@@ -484,8 +492,10 @@ function saveTickBoxToDB($boxId, $pageId, $x, $y, $description, $quantity, $temp
 	}
 	if ($statement !== false) {
 		$db->beginTransaction();
-		$statement->bindParam(':x', intval($x));
-		$statement->bindParam(':y', intval($y));
+		$xParam = intval($x);
+		$yParam = intval($y);
+		$statement->bindParam(':x', $xParam);
+		$statement->bindParam(':y', $yParam);
 		$statement->bindParam(':dateModified', $currentTime);
 		$statement->bindParam(':pageId', $pageId);
 		if ($statement->execute()) {
@@ -683,10 +693,14 @@ function saveAudioAreaToDB($pageId, $left, $top, $right, $bottom, $soundCloudId)
 	$statement = $db->prepare('INSERT INTO audioareas (pageId, left, top, right, bottom, soundCloudId, deleted, dateCreated, dateModified) VALUES (:pageId, :left, :top, :right, :bottom, :soundCloudId, 0, :dateCreated, :dateModified)');
 	if ($statement !== false) {
 		$db->beginTransaction();
-		$statement->bindParam(':left', intval($left));
-		$statement->bindParam(':top', intval($top));
-		$statement->bindParam(':right', intval($right));
-		$statement->bindParam(':bottom', intval($bottom));
+		$leftParam = intval($left);
+		$topParam = intval($top);
+		$rightParam = intval($right);
+		$bottomParam = intval($bottom);
+		$statement->bindParam(':left', $leftParam);
+		$statement->bindParam(':top', $topParam);
+		$statement->bindParam(':right', $rightParam);
+		$statement->bindParam(':bottom', $bottomParam);
 		$statement->bindParam(':soundCloudId', $soundCloudId);
 		$statement->bindParam(':dateModified', $currentTime);
 		$statement->bindParam(':dateCreated', $currentTime);
